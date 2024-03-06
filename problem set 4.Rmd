@@ -1,0 +1,95 @@
+---
+title: "Problem Set 4"
+author: "Leah Shiferaw"
+output: 
+  pdf_document:
+    includes:
+      in_header: header.tex
+fontsize: 12pt
+---
+
+```{r}
+
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  eval = TRUE,
+  fig.align = 'center'
+)
+
+library(knitr)
+library(png)
+library(tidyr)
+library(ggplot2)
+
+```
+
+## Instructions
+Replicate the plots below to the best of your ability. Try to match *every* element exactly. Please `echo` all code chunks. The chunks must show every step you took and option you specified to generate the plots. Submit in hard copy by March 6. 
+
+
+## Senate projections
+Forecasters at FiveThirtyEight.com published the plot below in [a piece describing their simulations and predictions](https://fivethirtyeight.com/features/52-senators-filibuster/) in advance of the 2022 U.S. midterm elections. 
+
+
+```{r, out.width="300px", fig.retina=2}
+  include_graphics('fivethirtyeight.png')
+```
+
+1. Use the `senate_seat_distribution_2022.csv` data to replicate the plot exactly. The *one exception*: ignore the text grob, arrow, and shading about the chance of Democrats winning 50 or 51 seats. You can read more about the data at the [FiveThirtyEight github repository](https://github.com/fivethirtyeight/data/tree/master/election-forecasts-2022) for their forecast. Your printed plot should be 5 inches wide and 3.5 inches tall.
+
+
+```{r}
+
+### Basic histogram of seatprob_Dparty
+
+df = read.csv('senate_seat_distribution_2022.csv')
+
+FctWhen = function(...){
+  args = rlang::list2
+  cases = case_when(!!!args)
+  exect(fct_relevel, cases, !!!rhs)
+}
+
+
+
+seatprob_Dparty <- c(50, 52, 54, 56, 58, 60, 62)
+
+hist(seatprob_Dparty, breaks = 6, col = '#5867ab', border = 'white', main = 'How many Senate seats we expect each party to win', xlab = 'Values', ylab = 'Frequency')
+
+
+```
+
+
+## Blue Jay data
+I love birds. If I could start over, I might choose to study bird behavior instead of human behavior. The plot below shows the relationship between head length and body mass for blue jays. 
+
+```{r, out.width = '200px', retina = 1, fig.cap = "Head length versus body mass for 123 blue jays. The birds' sex is indicated by color, and the birds' skull size by symbol size. Head-length measurements include the length of the bill while skull-size measurements do not. Data source: Keith Tarvin, Oberlin College."}
+
+  include_graphics('jaysgraph.png')
+
+```
+
+2. Use the `blue_jays.rda` data to replicate the plot in full, including the note describing the plot. The final output plot should be 4 inches wide and 3 inches tall.
+
+
+```{r}
+
+load(file='blue_jays.rda')
+
+plot3 <- ggplot(blue_jays, aes(x = Mass, y = Head, color = KnownSex, size = factor(Skull))) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("M" = "#005fa7", "F" = "#da3c00")) +
+  scale_y_continuous(
+    limits = c(52, 60),
+    breaks = c(52, 54, 56, 58, 60)) +
+  scale_size_manual(values = c("28" = 3, "30" = 4, "32" = 5, "34" = 6)) +
+  labs(x = "body mass (g)", y = "head length (mm)", color = "sex", size = "skull size (mm)")
+  theme_bw()
+print(plot3)
+
+```
+
+```{r}
+ggsave('birds.png', plot3, width = 4, height = 3
+)
+```
